@@ -95,7 +95,10 @@ public slots:
     void load_image();
     void save_image();
     void procesar();
-    void ecualizar();
+    void ecualizar(Mat aux, Mat yuv[3]);
+    void umbralizar(Mat aux, Mat yuv[3]);
+    void filtroGausiano(Mat aux, Mat yuv[3]);
+    void filtroMedio(Mat aux, Mat yuv[3]);
 };
 
 

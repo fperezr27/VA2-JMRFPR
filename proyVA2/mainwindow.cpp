@@ -201,7 +201,11 @@ void MainWindow::save_image(){
 }
 
 void MainWindow::procesar(){
+    Mat aux;
+    Mat yuv[3];
 
+    cvtColor(colorImage, aux, COLOR_RGB2YUV);
+    split(aux,yuv);
     switch (ui->operationComboBox->currentIndex()) {
     //Transformación de pixel
     case 0:
@@ -209,19 +213,19 @@ void MainWindow::procesar(){
         break;
     //Umbralizar
     case 1:
-
+        umbralizar(aux,yuv);
         break;
     //Ecualizar
     case 2:
-        ecualizar();
+        ecualizar(aux,yuv);
         break;
     //Filtro Gausiano
     case 3:
-
+        filtroGausiano(aux,yuv);
         break;
     //Filtro medio borroso
     case 4:
-
+        filtroMedio(aux,yuv);
         break;
     //Filtro lineal
     case 5:
@@ -245,12 +249,8 @@ void MainWindow::procesar(){
 
 }
 
-void MainWindow::ecualizar(){
-    Mat aux;
-    Mat yuv[3];
+void MainWindow::ecualizar(Mat aux, Mat yuv[3]){
     if(ui->colorButton->isChecked()){
-        cvtColor(colorImage, aux, COLOR_RGB2YUV);
-        split(aux,yuv);
         cv::equalizeHist(yuv[0],yuv[0]);
         merge(yuv,3,aux);
         cvtColor(aux, destColorImage, COLOR_YUV2RGB);
@@ -258,6 +258,43 @@ void MainWindow::ecualizar(){
         cv::equalizeHist(grayImage,destGrayImage);
     }
 
+}
+
+void MainWindow::umbralizar(Mat aux, Mat yuv[3]){
+    double umbral = ui->thresholdSpinBox->value();
+    if(ui->colorButton->isChecked()){
+        cv::threshold(yuv[0],yuv[0],umbral,255,THRESH_BINARY);
+        merge(yuv,3,aux);
+        cvtColor(aux, destColorImage, COLOR_YUV2RGB);
+    }else{
+        cv::threshold(grayImage,destGrayImage,umbral,255,THRESH_BINARY);
+    }
+}
+
+void MainWindow::filtroGausiano(Mat aux, Mat yuv[3]){
+    Size ventana;
+    ventana.width = ui->gaussWidthBox->value();
+    ventana.height = ui->gaussWidthBox->value();
+    if(ui->colorButton->isChecked()){
+        cv::GaussianBlur(yuv[0],yuv[0],ventana,ventana.width/5.);
+        merge(yuv,3,aux);
+        cvtColor(aux, destColorImage, COLOR_YUV2RGB);
+    }else{
+        cv::GaussianBlur(grayImage,destGrayImage,ventana,ventana.width/5.);
+
+    }
+}
+
+void MainWindow::filtroMedio(Mat aux, Mat yuv[3]){
+    int ventana;
+    ventana = ui->gaussWidthBox->value();
+    if(ui->colorButton->isChecked()){
+        cv::medianBlur(yuv[0],yuv[0],ventana);
+        merge(yuv,3,aux);
+        cvtColor(aux, destColorImage, COLOR_YUV2RGB);
+    }else{
+        cv::medianBlur(grayImage,destGrayImage,ventana);
+    }
 }
 
 
