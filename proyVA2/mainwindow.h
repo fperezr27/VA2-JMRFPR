@@ -11,6 +11,7 @@
 #include <opencv2/videoio/videoio.hpp>
 #include <opencv2/features2d/features2d.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
+#include <opencv2/core/matx.hpp>
 
 #include <imgviewer.h>
 #include <ui_pixelTForm.h>
@@ -99,7 +100,9 @@ public slots:
     void umbralizar(Mat aux, Mat yuv[3]);
     void filtroGausiano(Mat aux, Mat yuv[3]);
     void filtroMedio(Mat aux, Mat yuv[3]);
+    void filtroLineal(Mat aux, Mat yuv[3]);
+    void dilatar(Mat aux, Mat yuv[3]);
+    void erosionar(Mat aux, Mat yuv[3]);
+
 };
-
-
 #endif // MAINWINDOW_H

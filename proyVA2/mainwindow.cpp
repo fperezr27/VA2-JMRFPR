@@ -229,15 +229,15 @@ void MainWindow::procesar(){
         break;
     //Filtro lineal
     case 5:
-
+        filtroLineal(aux,yuv);
         break;
     //Dilatar
     case 6:
-
+        dilatar(aux,yuv);
         break;
     //Erosionar
     case 7:
-
+        erosionar(aux,yuv);
         break;
     //Aplicar severo
     case 8:
@@ -297,4 +297,49 @@ void MainWindow::filtroMedio(Mat aux, Mat yuv[3]){
     }
 }
 
+void MainWindow::filtroLineal(Mat aux, Mat yuv[3]){
+    Matx<float,3,3> kernel;
+    for(int i = 0; i < 3;i++){
+        for(int j = 0;j < 3; j++){
+            kernel(i,j) = lFilterDialog.kernelWidget->item(i,j)->text().toFloat();
+        }
+    }
+    if(ui->colorButton->isChecked()){
+        cv::filter2D(yuv[0],yuv[0],-1,kernel,Point(-1,-1),lFilterDialog.addedVBox->value());
+        merge(yuv,3,aux);
+        cvtColor(aux, destColorImage, COLOR_YUV2RGB);
+    }else{
+        cv::filter2D(grayImage,destGrayImage,-1,kernel,Point(-1,-1),lFilterDialog.addedVBox->value());
+    }
+}
+
+void MainWindow::dilatar(Mat aux, Mat yuv[3]){
+    Mat imgAux;
+    Mat kernel;
+    double umbral = ui->thresholdSpinBox->value();
+    if(ui->colorButton->isChecked()){
+        cv::threshold(yuv[0],yuv[0],umbral,255,THRESH_BINARY);
+        cv::dilate(yuv[0],yuv[0],kernel);
+        merge(yuv,3,aux);
+        cvtColor(aux, destColorImage, COLOR_YUV2RGB);
+    }else{
+        cv::threshold(grayImage,imgAux,umbral,255,THRESH_BINARY);
+        cv::dilate(imgAux,destGrayImage,kernel);
+    }
+}
+
+void MainWindow::erosionar(Mat aux, Mat yuv[3]){
+    Mat imgAux;
+    Mat kernel;
+    double umbral = ui->thresholdSpinBox->value();
+    if(ui->colorButton->isChecked()){
+        cv::threshold(yuv[0],yuv[0],umbral,255,THRESH_BINARY);
+        cv::erode(yuv[0],yuv[0],kernel);
+        merge(yuv,3,aux);
+        cvtColor(aux, destColorImage, COLOR_YUV2RGB);
+    }else{
+        cv::threshold(grayImage,imgAux,umbral,255,THRESH_BINARY);
+        cv::erode(imgAux,destGrayImage,kernel);
+    }
+}
 
