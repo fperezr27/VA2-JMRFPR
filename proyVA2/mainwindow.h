@@ -103,6 +103,7 @@ public slots:
     void filtroLineal(Mat aux, Mat yuv[3]);
     void dilatar(Mat aux, Mat yuv[3]);
     void erosionar(Mat aux, Mat yuv[3]);
+    void transformarPixel(Mat aux, Mat yuv[3]);
 
 };
 #endif // MAINWINDOW_H

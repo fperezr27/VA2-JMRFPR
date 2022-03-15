@@ -209,7 +209,7 @@ void MainWindow::procesar(){
     switch (ui->operationComboBox->currentIndex()) {
     //Transformación de pixel
     case 0:
-
+        transformarPixel(aux,yuv);
         break;
     //Umbralizar
     case 1:
@@ -246,6 +246,37 @@ void MainWindow::procesar(){
     default:
         break;
     }
+
+}
+
+
+
+void MainWindow::transformarPixel(Mat aux, Mat yuv[3]){
+    std::vector<int> s(4);
+    std::vector<int> r(4);
+    std::vector<uchar> lut(256);
+    int cont = 0;
+    for(int i = 0; i < 4; i++){
+        for (int j =0; j < 2; j++){
+            s[cont] = pixelTDialog.grayTransformW->item(i,1)->text().toInt();
+            r[cont] = pixelTDialog.grayTransformW->item(i,0)->text().toInt();
+        }
+        cont++;
+    }
+
+    for(int x = 0; x < 3; x++){
+        for(int y = r[x];y <= r[x+1];y++){
+            lut[y] = ((y-r[x])*(s[x+1]-s[x]))/(r[x+1]-r[x])+s[x];
+        }
+    }
+
+    if(ui->colorButton->isChecked()){
+
+    }else{
+        cv::LUT(grayImage, lut, destGrayImage);
+
+    }
+
 
 }
 
